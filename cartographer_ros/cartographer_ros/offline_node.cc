@@ -43,6 +43,8 @@ DEFINE_bool(keep_running, false,
             "Keep running the offline node after all messages from the bag "
             "have been processed.");
 
+
+
 namespace cartographer_ros {
 
 constexpr char kClockTopic[] = "clock";

@@ -28,6 +28,7 @@ DEFINE_string(configuration_basename, "",
               "Basename, i.e. not containing any directory prefix, of the "
               "configuration file.");
 DEFINE_string(bag_filenames, "", "Comma-separated list of bags to process.");
+DEFINE_string(init_pose_filename, "init_pose.lua", "Starting pose of a new trajectory");
 
 int main(int argc, char** argv) {
   google::InitGoogleLogging(argv[0]);
@@ -47,7 +48,7 @@ int main(int argc, char** argv) {
   cartographer_ros::NodeOptions node_options;
   cartographer_ros::TrajectoryOptions trajectory_options;
   std::tie(node_options, trajectory_options) = cartographer_ros::LoadOptions(
-      FLAGS_configuration_directory, FLAGS_configuration_basename);
+      FLAGS_configuration_directory, FLAGS_configuration_basename, FLAGS_init_pose_filename );
 
   // Since we preload the transform buffer, we should never have to wait for a
   // transform. When we finish processing the bag, we will simply drop any

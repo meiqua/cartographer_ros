@@ -26,7 +26,6 @@
 #include "cartographer_ros/trajectory_options.h"
 
 namespace cartographer_ros {
-
 // Top-level options of Cartographer's ROS integration.
 struct NodeOptions {
   ::cartographer::mapping::proto::MapBuilderOptions map_builder_options;
@@ -42,7 +41,7 @@ NodeOptions CreateNodeOptions(
 
 std::tuple<NodeOptions, TrajectoryOptions> LoadOptions(
     const std::string& configuration_directory,
-    const std::string& configuration_basename);
+    const std::string& configuration_basename,const std::string& init_pose_filename);
 
 }  // namespace cartographer_ros
 

@@ -45,17 +45,34 @@ NodeOptions CreateNodeOptions(
 
 std::tuple<NodeOptions, TrajectoryOptions> LoadOptions(
     const std::string& configuration_directory,
-    const std::string& configuration_basename) {
-  auto file_resolver = cartographer::common::make_unique<
-      cartographer::common::ConfigurationFileResolver>(
-      std::vector<std::string>{configuration_directory});
-  const std::string code =
-      file_resolver->GetFileContentOrDie(configuration_basename);
-  cartographer::common::LuaParameterDictionary lua_parameter_dictionary(
-      code, std::move(file_resolver));
+    const std::string& configuration_basename,
+    const std::string& init_pose_filename) {
 
-  return std::make_tuple(CreateNodeOptions(&lua_parameter_dictionary),
-                         CreateTrajectoryOptions(&lua_parameter_dictionary));
+    auto file_resolver = cartographer::common::make_unique<
+    cartographer::common::ConfigurationFileResolver>(
+    std::vector<std::string>{configuration_directory});
+    const std::string code =
+    file_resolver->GetFileContentOrDie(configuration_basename);
+
+  std::string initial_pose =
+    file_resolver->GetFileContentOrDie(init_pose_filename);
+    
+    auto lua_parameter_dictionary =
+    cartographer::common::LuaParameterDictionary::NonReferenceCounted(
+          code, std::move(file_resolver));
+
+    auto initial_trajectory_pose_file_resolver =
+        cartographer::common::make_unique<
+            cartographer::common::ConfigurationFileResolver>(
+            std::vector<std::string>{configuration_directory});
+    auto initial_trajectory_pose =
+        cartographer::common::LuaParameterDictionary::NonReferenceCounted(
+            "return " + initial_pose,
+            std::move(initial_trajectory_pose_file_resolver));
+
+  return std::make_tuple(CreateNodeOptions(lua_parameter_dictionary.get()),
+                              CreateTrajectoryOptions(lua_parameter_dictionary.get(),
+                                   initial_trajectory_pose.get()));
 }
 
 }  // namespace cartographer_ros

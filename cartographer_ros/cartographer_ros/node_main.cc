@@ -36,6 +36,9 @@ DEFINE_string(
     save_map_filename, "",
     "If non-empty, serialize state and write it to disk before shutting down.");
 
+DEFINE_string(init_pose_filename, "init_pose.lua", "Starting pose of a new trajectory");
+
+
 namespace cartographer_ros {
 namespace {
 
@@ -44,9 +47,11 @@ void Run() {
   tf2_ros::Buffer tf_buffer{::ros::Duration(kTfBufferCacheTimeInSeconds)};
   tf2_ros::TransformListener tf(tf_buffer);
   NodeOptions node_options;
+
   TrajectoryOptions trajectory_options;
   std::tie(node_options, trajectory_options) =
-      LoadOptions(FLAGS_configuration_directory, FLAGS_configuration_basename);
+      LoadOptions(FLAGS_configuration_directory, FLAGS_configuration_basename, FLAGS_init_pose_filename);
+
 
   auto map_builder =
       cartographer::common::make_unique<cartographer::mapping::MapBuilder>(
@@ -57,7 +62,7 @@ void Run() {
   }
 
   if (FLAGS_start_trajectory_with_default_topics) {
-    node.StartTrajectoryWithDefaultTopics(trajectory_options);
+   node.StartTrajectoryWithDefaultTopics(trajectory_options);
   }
 
   ::ros::spin();
